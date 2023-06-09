@@ -10,7 +10,21 @@ type Issue {
     title: String 
 }
 
+input IssueInputs {
+    status: String
+    owner: String
+    created: GraphQLDateType
+    effort: Int
+    completionDate: GraphQLDateType
+    title: String 
+}
+
 type Query {
     name: String!
     issueList: [Issue]
+}
+
+type Mutation {
+    sendName(name: String): String
+    issueAdd(issue: IssueInputs): Issue
 }

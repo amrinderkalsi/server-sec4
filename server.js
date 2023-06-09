@@ -69,7 +69,19 @@ const resolvers = {
       return issues;
     }
   },
-  GraphQLDateType: graphQlDateType
+  GraphQLDateType: graphQlDateType,
+  Mutation: {
+    sendName: (_root, {name}) => {
+      return name+`!`;
+    },
+    issueAdd: (_root, {issue}) => {
+      issue.id = issues.length + 1;
+      issue.status = 'New';
+      issue.created = new Date();
+      issues.push(issue);
+      return issue;
+    }
+  }
 };
 
 const apolloServer = new ApolloServer({
