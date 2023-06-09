@@ -1,0 +1,16 @@
+scalar GraphQLDateType
+
+type Issue {
+    id: Int
+    status: String
+    owner: String
+    created: GraphQLDateType
+    effort: Int
+    completionDate: GraphQLDateType
+    title: String 
+}
+
+type Query {
+    name: String!
+    issueList: [Issue]
+}
