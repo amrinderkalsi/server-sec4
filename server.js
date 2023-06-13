@@ -48,12 +48,11 @@ app.get('/api/issues', (req, res) => {
 app.post('/api/issues', (req, res) => {
     console.log(req.body);
     const newIssue = req.body;
-    newIssue.id = issues.length + 1;
-    newIssue.status = 'New';
-    newIssue.created = new Date();
-    issues.push(newIssue);
-    console.log('res.json', newIssue)
-    res.json(newIssue);
+    issueAdd(null, newIssue)
+      .then(savedResult => {
+        console.log('res.json', savedResult)
+        res.json(savedResult);
+      })
 })
 
 const graphQlDateType = new GraphQLScalarType({
@@ -76,6 +75,20 @@ const issueList = async () => {
   return issues;
 }
 
+const getNextSequence = async () => {
+  const issuesCount = await db.collection('issues').find().count();
+  return issuesCount + 1;
+}
+
+const issueAdd = async (_root, {issue}) => {
+  issue.id = await getNextSequence();
+  issue.status = 'New';
+  issue.created = new Date();
+  const result = await db.collection('issues').insertOne(issue);
+  const savedResult = await db.collection('issues').findOne({_id: result.insertedId});
+  return savedResult;
+}
+
 const resolvers = {
   Query: {
     name: () => 'Erick',
@@ -86,13 +99,7 @@ const resolvers = {
     sendName: (_root, {name}) => {
       return name+`!`;
     },
-    issueAdd: (_root, {issue}) => {
-      issue.id = issues.length + 1;
-      issue.status = 'New';
-      issue.created = new Date();
-      issues.push(issue);
-      return issue;
-    }
+    issueAdd: issueAdd
   }
 };
 
